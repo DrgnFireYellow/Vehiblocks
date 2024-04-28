@@ -1,6 +1,9 @@
-name: PluginTemplate
+name: Vehiblocks
 version: 1.0.0
-main: com.drgnfireyellow.template.Plugin
-description: A template plugin
+main: com.drgnfireyellow.vehiblocks.Vehiblocks
+description: Adding moving vehicles made out of blocks into Minecraft.
 author: DrgnFireYellow
 api-version: '1.20'
+commands:
+  'createvehicle':
+    description: "Create a new vehicle"
