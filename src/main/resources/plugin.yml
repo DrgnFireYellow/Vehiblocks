@@ -1,0 +1,6 @@
+name: PluginTemplate
+version: 1.0.0
+main: com.drgnfireyellow.template.Plugin
+description: A template plugin
+author: DrgnFireYellow
+api-version: '1.20'
