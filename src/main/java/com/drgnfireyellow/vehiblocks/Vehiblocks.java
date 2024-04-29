@@ -25,6 +25,8 @@ import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 import org.joml.Vector3f;
 
+import io.papermc.paper.event.entity.EntityMoveEvent;
+
 public class Vehiblocks extends JavaPlugin implements Listener {
     HashMap<Player,ArrayList<Location>> newVehiclePositions = new HashMap<Player,ArrayList<Location>>();
     ArrayList<Player> vehicleCreators = new ArrayList<Player>();
@@ -52,9 +54,22 @@ public class Vehiblocks extends JavaPlugin implements Listener {
         }
     }
 
+    // @EventHandler
+    // public void onEntityMove(EntityMoveEvent event) {
+    //     if (event.getEntity().getScoreboardTags().contains("vehiblocks_controller")) {
+    //         for (String tag : event.getEntity().getScoreboardTags()) {
+    //             if (tag.startsWith("vehiblocks.height.")) {
+    //                 int height = Integer.parseInt(tag.split("\\.")[3]) - 1;
+    //                 if (event.getEntity().isOnGround()) {
+    //                     event.getEntity().getLocation().setY(event.getEntity().getY() + height);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        Bukkit.getLogger().info("event");
         if (vehicleCreators.contains(event.getPlayer())) {
             event.setCancelled(true);
             ArrayList<Location> vehiclePositions = newVehiclePositions.get(event.getPlayer());
@@ -84,13 +99,14 @@ public class Vehiblocks extends JavaPlugin implements Listener {
 
                 World world = event.getPlayer().getWorld();
                 BlockDisplay base = (BlockDisplay) world.spawnEntity(vehiclePositions.get(2), EntityType.BLOCK_DISPLAY);
-                Pig controller = (Pig) world.spawnEntity(vehiclePositions.get(2).add(0.5, 0.5, 0.5), EntityType.PIG);
+                Pig controller = (Pig) world.spawnEntity(vehiclePositions.get(2).add(-0.5, -0.5, -0.5), EntityType.PIG);
                 controller.setInvisible(true);
                 controller.setPersistent(true);
                 controller.setSilent(true);
                 controller.setAI(false);
                 controller.addPassenger(base);
                 controller.addScoreboardTag("vehiblocks_controller");
+                controller.addScoreboardTag("vehiblocks.height." + Integer.toString(startY < endY ? startY - seatY : endY - seatY));
                 controller.setSaddle(true);
                 controller.setInvulnerable(true);
                 controller.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2, false, false));
@@ -101,7 +117,7 @@ public class Vehiblocks extends JavaPlugin implements Listener {
                             BlockDisplay newBlock = (BlockDisplay) world.spawnEntity(new Location(world, x, y, z), EntityType.BLOCK_DISPLAY);
                             newBlock.setBlock(world.getBlockData(new Location(world, x, y, z)));
                             Transformation transform = newBlock.getTransformation();
-                            transform.getTranslation().set(new Vector3f((float) (x - seatX), (float) (y - seatY - 1), (float) (z - seatZ)));
+                            transform.getTranslation().set(new Vector3f((float) (x - seatX), (float) (y - seatY + (startY < endY ? startY - seatY : endY - seatY)), (float) (z - seatZ)));
                             newBlock.setTransformation(transform);
                             base.addPassenger(newBlock);
                             event.getPlayer().getWorld().setType((int) x, (int) y, (int) z, Material.AIR);
